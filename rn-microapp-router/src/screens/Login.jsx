@@ -7,6 +7,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from 'axios';
 import colors from '../theme/colors';
+import Recover from './Recover';
 import { AUTH_API } from '../api/client';
 
 const schema = yup.object({
@@ -45,6 +46,12 @@ export default function Login({ navigation, onAuth }) {
       <TouchableOpacity onPress={() => navigation.navigate('Register')}>
         <Text style={styles.link}>Crear cuenta</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Recover')}>
+        <Text style={{ color:'#93c5fd', marginTop:16, textAlign:'center' }}>
+          ¿Olvidaste tu clave?
+        </Text>
+      </TouchableOpacity>
+
     </View>
   );
 }

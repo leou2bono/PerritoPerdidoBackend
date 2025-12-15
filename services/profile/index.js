@@ -59,8 +59,8 @@ const profileSchemaZ = z.object({
 app.post('/profiles', auth, async (req, res) => {
   const parsed = profileSchemaZ.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
-  const exists = await Profile.findOne({ userId: req.user.sub });
-  if (exists) return res.status(409).json({ error: 'Perfil ya existe. Use actualización.' });
+  //const exists = await Profile.findOne({ userId: req.user.sub });
+  //if (exists) return res.status(409).json({ error: 'Perfil ya existe. Use actualización.' });
 
   const { nombre, fechaNacimiento, fotoBase64, geo } = parsed.data;
   const profile = await Profile.create({
@@ -72,6 +72,16 @@ app.post('/profiles', auth, async (req, res) => {
     geo,
   });
   return res.status(201).json(profile);
+});
+
+// Obtener todos los perfiles
+app.get('/profiles', auth, async (req, res) => {
+  try {
+    const profiles = await Profile.find().limit(100); // límite de seguridad
+    res.json(profiles);
+  } catch (e) {
+    res.status(500).json({ error: 'Error al obtener perfiles' });
+  }
 });
 
 // Obtener mi perfil

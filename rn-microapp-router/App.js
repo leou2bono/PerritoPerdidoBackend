@@ -8,13 +8,16 @@ import Login from './src/screens/Login';
 import Register from './src/screens/Register';
 import Profile from './src/screens/Profile';
 import Index from './src/screens/Index';
+import Recover from './src/screens/Recover';
+import Menu
+ from './src/screens/Menu';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
 function DrawerMenu({ onLogout }) {
   return (
     <Drawer.Navigator>
-      <Stack.Screen name="Index" component={Index} />
+      <Stack.Screen name="Menu" component={Menu} />
       <Drawer.Screen name="Profile" component={Profile} options={{ title: 'Crear Perfil' }} />
       <Drawer.Screen name="Logout">
         {() => <LogoutScreen onLogout={onLogout} />}
@@ -45,6 +48,7 @@ export default function App() {
             {(props) => <Login {...props} onAuth={() => setAuth(true)} />}
           </Stack.Screen>
           <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="Recover" component={Recover} />
         </Stack.Navigator>
       )}
     </NavigationContainer>

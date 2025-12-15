@@ -8,6 +8,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
+
 //const cors = require('cors');
 const app = express();
 app.use(express.json({ limit: '1mb' }));
@@ -49,6 +52,33 @@ const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
 });
+
+function sendRecoveryEmail(to, token) {
+  console.log(`Simulando envío de correo a ${to} con token: ${token}`);
+}
+
+
+/*async function sendRecoveryEmail(to, token) {
+  // Configura tu transporte SMTP (ejemplo con Gmail)
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'leonardo.pavez@gmail.com', // tu correo
+      pass: 'Bonobono2123%', // tu contraseña o app password
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.MAIL_USER,
+    to,
+    subject: 'Recuperación de clave',
+    text: `Usa este token para resetear tu clave: ${token}`,
+    html: `<p>Usa este token para resetear tu clave:</p><b>${token}</b>`,
+  };
+
+  await transporter.sendMail(mailOptions);
+}*/
+
 
 // Registro
 app.post('/auth/register', async (req, res) => {
@@ -98,6 +128,46 @@ app.post('/auth/refresh', (req, res) => {
     return res.status(401).json({ error: 'Refresh token inválido' });
   }
 });
+
+// Solicitar recuperación de clave (envía email con link o código)
+app.post('/auth/recover', async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+    // Aquí generas un token temporal o código de recuperación
+    const recoveryToken = crypto.randomUUID(); 
+    user.recoveryToken = recoveryToken;
+    await user.save();
+
+    // Enviar email con link o código (ejemplo)
+    await sendRecoveryEmail(email, recoveryToken);
+
+    res.json({ message: 'Correo de recuperación enviado' });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ error: 'Error en recuperación' });
+  }
+});
+
+// Resetear clave con token
+app.post('/auth/reset', async (req, res) => {
+  const { token, newPassword } = req.body;
+  try {
+    const user = await User.findOne({ recoveryToken: token });
+    if (!user) return res.status(400).json({ error: 'Token inválido' });
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    user.recoveryToken = null;
+    await user.save();
+
+    res.json({ message: 'Clave actualizada correctamente' });
+  } catch (e) {
+    res.status(500).json({ error: 'Error al resetear clave' });
+  }
+});
+
 
 // Healthcheck
 app.get('/health', (_, res) => res.json({ status: 'ok' }));
