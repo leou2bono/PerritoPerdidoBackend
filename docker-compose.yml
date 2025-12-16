@@ -1,0 +1,42 @@
+services:
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  auth:
+    build: ./services/auth
+    container_name: auth
+    expose:
+      - "4001"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/rn_microapp
+    depends_on:
+      - mongo
+
+  profile:
+    build: ./services/profile
+    container_name: profile
+    expose:
+      - "4002"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/perritos
+    depends_on:
+      - mongo
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./services/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - auth
+      - profile
+
+volumes:
+  mongo_data:

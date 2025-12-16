@@ -2,8 +2,8 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const AUTH_API = 'http://localhost:4001';
-export const PROFILE_API = 'http://localhost:4002';
+export const AUTH_API = 'http://localhost';
+export const PROFILE_API = 'http://localhost';
 
 const client = axios.create();
 
