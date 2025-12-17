@@ -10,6 +10,8 @@ COPY package*.json ./
 # Instalar dependencias
 RUN npm install --production
 
+RUN apk add --no-cache ca-certificates
+
 # Copiar el resto del código
 COPY . .
 

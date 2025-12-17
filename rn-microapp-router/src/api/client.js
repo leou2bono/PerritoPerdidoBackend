@@ -2,8 +2,8 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const AUTH_API = 'http://localhost';
-export const PROFILE_API = 'http://localhost';
+export const AUTH_API = 'https://perrito-auth.fly.dev';
+export const PROFILE_API = 'https://perrito-profile.fly.dev';
 
 const client = axios.create();
 
